@@ -13,7 +13,7 @@ import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 import { useNavigate, useParams } from "react-router-dom";
-
+import Download from "yet-another-react-lightbox/plugins/download";
 function LightBox({ indexId, images, setOpenLightbox }) {
   // let { indexId } = useParams();
   const [index, setIndex] = useState(-1);
@@ -28,11 +28,15 @@ function LightBox({ indexId, images, setOpenLightbox }) {
 
       <Lightbox
         toolbar={{ buttons: ["close"] }}
-        slides={images}
+        // slides={images}
+        slides={images.map((slide) => ({
+          ...slide,
+          download: `${slide.src}?download`,
+        }))}
         open={true}
         index={indexId}
         close={() => setIndex(-1)}
-        plugins={[Fullscreen, Slideshow, Thumbnails, Zoom]}
+        plugins={[Fullscreen, Slideshow, Thumbnails, Zoom, Download]}
         on={{
           exiting: () => {
             setOpenLightbox(null);

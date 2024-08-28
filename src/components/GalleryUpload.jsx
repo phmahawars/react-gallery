@@ -1,10 +1,11 @@
 import { useEffect, useState, useCallback } from "react";
 import { FaFolderClosed, FaUpload, FaCamera, FaPlus } from "react-icons/fa6";
-// import GalleryImageUpload from "./GalleryImageUpload";
 import { useSelector, useDispatch } from "react-redux";
 import { GalleryLoaderSliceAction } from "../store/GalleryLoaderSlice";
+import ToastMessage from "./ToastMessage";
 function GalleryUpload() {
   const [show, setShow] = useState(false);
+  const [loginMessage, setLoginMessage] = useState("");
   const dispatch = useDispatch();
   const auth = useSelector((store) => store.auth);
   const upload = useCallback((e) => {
@@ -26,6 +27,8 @@ function GalleryUpload() {
       })
         .then((res) => res.json())
         .then((data) => {
+          setLoginMessage(data.message);
+          document.querySelector(".showGalleryUpload").click();
           dispatch(GalleryLoaderSliceAction.markFetchDone());
           dispatch(GalleryLoaderSliceAction.markFetchFinished());
         })
@@ -38,6 +41,9 @@ function GalleryUpload() {
   }, []);
   return (
     <>
+      {loginMessage != "" && (
+        <ToastMessage message={loginMessage} state={setLoginMessage} />
+      )}
       {show && (
         <div
           className="galleryUpload"

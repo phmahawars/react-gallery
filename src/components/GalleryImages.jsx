@@ -10,6 +10,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { galleryGetSliceAction } from "../store/GalleryGetSlice";
 import LightBox from "../page/lightBox/LightBox";
 import { GalleryLoaderSliceAction } from "../store/GalleryLoaderSlice";
+import { get_images_api } from "../store/ApiKey";
 
 function GalleryImages() {
   const images = useSelector((store) => store.gallery);
@@ -33,7 +34,7 @@ function GalleryImages() {
   let time = 2;
   const renderAfterSec = useCallback(() => {
     setTimeout(() => {
-      fetch(`https://cdn.flightbulk.com/api/images?page=${time}`, {
+      fetch(`${get_images_api}?page=${time}`, {
         headers: {
           Authorization: "Bearer " + auth.token,
         },
@@ -53,7 +54,7 @@ function GalleryImages() {
   });
   useEffect(() => {
     dispatch(GalleryLoaderSliceAction.markFetchStarted());
-    fetch("https://cdn.flightbulk.com/api/images?page=1", {
+    fetch(`${get_images_api}?page=1`, {
       headers: {
         Authorization: "Bearer " + auth.token,
       },
@@ -63,7 +64,6 @@ function GalleryImages() {
         dispatch(galleryGetSliceAction.getImages(data.data));
         dispatch(GalleryLoaderSliceAction.markFetchFinished());
         if (data.data.length !== 0 && data.last_page > 1) {
-          console.log("ds");
           renderAfterSec();
         } else {
           setRendring(false);

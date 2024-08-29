@@ -3,6 +3,7 @@ import { Form, useLoaderData } from "react-router-dom";
 import ToastMessage from "../../components/ToastMessage";
 
 import { tokenEncode } from "../../functions/tokenGenerate";
+import { login_api, register_api } from "../../store/ApiKey";
 // import "./AuthForm.css"; // Import your CSS file for styling
 
 function Login() {
@@ -51,7 +52,7 @@ function Login() {
     e.preventDefault();
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData.entries());
-    fetch(`https://cdn.flightbulk.com/api/register`, {
+    fetch(register_api, {
       method: "post",
       body: JSON.stringify(data),
       headers: {
@@ -78,7 +79,7 @@ function Login() {
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData.entries());
 
-    fetch(`https://cdn.flightbulk.com/api/login`, {
+    fetch(login_api, {
       method: "post",
       body: JSON.stringify(data),
       headers: {

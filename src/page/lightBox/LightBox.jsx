@@ -15,10 +15,8 @@ import "yet-another-react-lightbox/plugins/thumbnails.css";
 import { useNavigate, useParams } from "react-router-dom";
 import Download from "yet-another-react-lightbox/plugins/download";
 function LightBox({ indexId, images, setOpenLightbox }) {
-  // let { indexId } = useParams();
   const [index, setIndex] = useState(-1);
   const navigate = useNavigate();
-  console.log(images);
   return (
     <>
       <RowsPhotoAlbum

@@ -3,13 +3,19 @@ import { FaFolderClosed, FaUpload, FaCamera, FaPlus } from "react-icons/fa6";
 import { useSelector, useDispatch } from "react-redux";
 import { GalleryLoaderSliceAction } from "../store/GalleryLoaderSlice";
 import ToastMessage from "./ToastMessage";
+import { upload_image_api } from "../store/ApiKey";
 function GalleryUpload() {
   const [show, setShow] = useState(false);
   const [loginMessage, setLoginMessage] = useState("");
   const dispatch = useDispatch();
   const auth = useSelector((store) => store.auth);
+
   const upload = useCallback((e) => {
     const ext = ["png", "jpg", "jpeg", "gif", "webp", "mp4"];
+
+    const allFiles = e.target.files;
+    // Array.from(allFiles).forEach((value, index) => {
+    console.log(allFiles[0]);
     const file = e.target.files[0];
     const fileE = file.type.split("/");
 
@@ -18,7 +24,7 @@ function GalleryUpload() {
       formData.append("image", file);
 
       dispatch(GalleryLoaderSliceAction.markFetchStarted());
-      fetch("https://cdn.flightbulk.com/api/images", {
+      fetch(upload_image_api, {
         method: "POST",
         body: formData,
         headers: {
@@ -33,11 +39,12 @@ function GalleryUpload() {
           dispatch(GalleryLoaderSliceAction.markFetchFinished());
         })
         .catch((error) => {
-          console.error("Error uploading image:");
+          setLoginMessage("Error uploading image");
         });
     } else {
-      console.log("Unsupported file type");
+      setLoginMessage("Unsupported file type");
     }
+    // });
   }, []);
   return (
     <>
@@ -81,6 +88,7 @@ function GalleryUpload() {
               accept="image/*, video/*"
               id="FaUpload"
               onChange={(e) => upload(e)}
+              multiple
             ></input>
             <input
               type="file"
@@ -96,10 +104,6 @@ function GalleryUpload() {
         <button
           className="btn showGalleryUpload rounded-pill text-white mt-3"
           onClick={(e) => {
-            // e.currentTarget.style.transform = show
-            //   ? "rotate(0deg)"
-            //   : "rotate(45deg)";
-
             setShow(!show);
           }}
         >

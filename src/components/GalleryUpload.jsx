@@ -9,41 +9,56 @@ function GalleryUpload() {
   const [loginMessage, setLoginMessage] = useState("");
   const dispatch = useDispatch();
   const auth = useSelector((store) => store.auth);
+  // $totalFiles = 6;     // Total number of files
+  // $uploadedFiles = 4;  // Number of files that have been uploaded
 
+  // // Calculate the percentage
+  // $uploadPercentage = ($uploadedFiles / $totalFiles) * 100;
+
+  // // Round to 2 decimal places
+  // $uploadPercentage = round($uploadPercentage, 2);
+
+  // echo "Upload Percentage: " . $uploadPercentage . "%";
   const upload = useCallback((e) => {
     const ext = ["png", "jpg", "jpeg", "gif", "webp", "mp4"];
-
     const allFiles = e.target.files;
-    // Array.from(allFiles).forEach((value, index) => {
-    console.log(allFiles[0]);
-    const file = e.target.files[0];
-    const fileE = file.type.split("/");
-
-    if (ext.includes(fileE[1])) {
-      const formData = new FormData();
-      formData.append("image", file);
-
-      dispatch(GalleryLoaderSliceAction.markFetchStarted());
-      fetch(upload_image_api, {
-        method: "POST",
-        body: formData,
-        headers: {
-          Authorization: "Bearer " + auth.token,
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          setLoginMessage(data.message);
-          document.querySelector(".showGalleryUpload").click();
-          dispatch(GalleryLoaderSliceAction.markFetchDone());
-          dispatch(GalleryLoaderSliceAction.markFetchFinished());
+    let fileLen = allFiles.length;
+    multpleUploads();
+    function multpleUploads() {
+      fileLen--;
+      console.log(fileLen);
+      const file = e.target.files[fileLen];
+      const fileE = file.type.split("/");
+      if (ext.includes(fileE[1])) {
+        const formData = new FormData();
+        formData.append("image", file);
+        dispatch(GalleryLoaderSliceAction.markFetchStarted());
+        fetch(upload_image_api, {
+          method: "POST",
+          body: formData,
+          headers: {
+            Authorization: "Bearer " + auth.token,
+          },
         })
-        .catch((error) => {
-          setLoginMessage("Error uploading image");
-        });
-    } else {
-      setLoginMessage("Unsupported file type");
+          .then((res) => res.json())
+          .then((data) => {
+            if (fileLen == 0) {
+              setLoginMessage(data.message);
+              document.querySelector(".showGalleryUpload").click();
+              dispatch(GalleryLoaderSliceAction.markFetchDone());
+              dispatch(GalleryLoaderSliceAction.markFetchFinished());
+            } else {
+              multpleUploads();
+            }
+          })
+          .catch((error) => {
+            setLoginMessage("Error uploading image");
+          });
+      } else {
+        setLoginMessage("Unsupported file type");
+      }
     }
+
     // });
   }, []);
   return (

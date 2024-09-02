@@ -32,27 +32,28 @@ function GalleryImages() {
     device = 300;
   }
   let time = 2;
-  const renderAfterSec = useCallback(() => {
-    setTimeout(() => {
-      fetch(`${get_images_api}?page=${time}`, {
-        headers: {
-          Authorization: "Bearer " + auth.token,
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.data.length != 0) {
-            dispatch(galleryGetSliceAction.appendImages(data.data));
-            time = time + 1;
-            renderAfterSec();
-            setRendring(true);
-          } else {
-            setRendring(false);
-          }
-        });
-    }, 2000);
-  });
+
   useEffect(() => {
+    function renderAfterSec() {
+      setTimeout(() => {
+        fetch(`${get_images_api}?page=${time}`, {
+          headers: {
+            Authorization: "Bearer " + auth.token,
+          },
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.data.length != 0) {
+              dispatch(galleryGetSliceAction.appendImages(data.data));
+              time = time + 1;
+              renderAfterSec();
+              setRendring(true);
+            } else {
+              setRendring(false);
+            }
+          });
+      }, 2000);
+    }
     dispatch(GalleryLoaderSliceAction.markFetchStarted());
     fetch(`${get_images_api}?page=1`, {
       headers: {
@@ -109,7 +110,7 @@ function GalleryImages() {
         {images.length !== 0 ? (
           images.map((item, key) => (
             <GallerySingleImage
-              key={item.id}
+              key={key}
               item={item}
               device={device}
               clickPhoto={clickPhoto}
